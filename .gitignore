@@ -105,3 +105,4 @@ dist
 
 # Config secrets
 config/default.json
+config
