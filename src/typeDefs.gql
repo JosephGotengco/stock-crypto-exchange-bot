@@ -2,23 +2,65 @@ type Error {
     message: String!
 }
 
-type ApiResponse {
+type ConvertCurrencyResponse {
     status: Int!
-    prices: [Price]!
+    prices: [ConvertedCurrencyPrice]!
     errors: [Error]!
 }
 
-type Price {
+type ConvertedCurrencyPrice {
     fromCurrency: String!
     price: String!
     toCurrency: String!
     date: String!
 }
 
+type AutoCompleteMatch {
+    symbol: String!
+    name: String!
+    type: String!
+    region: String!
+    marketOpen: String!
+    marketClose: String!
+    timezone: String!
+    currency: String!
+    matchScore: String!
+}
+
+type AutoCompleteResponse {
+    status: Int!
+    matches: [AutoCompleteMatch]!
+    errors: [Error]!
+}
+
+type AdjustedStockPrice {
+    open: String!
+    high: String!
+    low: String!
+    close: String!
+    adjusted_close: String!
+    volume: String!
+    dividend_amount: String!
+    split_coefficient: String!
+    date: String!
+}
+
+type AdjustedStockPriceResponse {
+    status: Int!
+    adjustedStockPrices: [AdjustedStockPrice]!
+    errors: [Error]!
+}
+
 
 type Query {
-    getCryptoCurrencyPrice(
+    convertCurrency(
         fromCurrency: String!
         toCurrency: String!
-    ): ApiResponse!
+    ): ConvertCurrencyResponse!
+    autoCompleteSymbol(
+        symbol: String!
+    ): AutoCompleteResponse!
+    adjustedStockPrice(
+        symbol: String!
+    ): AdjustedStockPriceResponse!
 }
