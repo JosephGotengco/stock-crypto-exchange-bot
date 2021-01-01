@@ -51,7 +51,6 @@ type AdjustedStockPriceResponse {
     errors: [Error]!
 }
 
-
 type Query {
     convertCurrency(
         fromCurrency: String!

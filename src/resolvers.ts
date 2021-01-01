@@ -60,10 +60,14 @@ export const autoCompleteSymbol = async(
 
     const url = `https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${symbol}&apikey=${ALPHA_API_KEY}`;
     const response = await axios.get(url);
-
     if (response.data["Error Message"]) {
         errors.push({
             message: `Cannot auto complete the symbol ${symbol}. Please try again later`,
+        });
+        status = 400;
+    } else if (response.data["Note"]) {
+        errors.push({
+            message: "Server has reached max auto complete limit for API. Please try again in 1 minute."
         });
         status = 400;
     } else {
@@ -89,19 +93,24 @@ export const getAdjustedStockPrice = async(
 
     const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=${symbol}&apikey=${ALPHA_API_KEY}`;
     const response = await axios.get(url);
-
     if (response.data["Error Message"]) {
         errors.push({
-            message: `Cannot auto complete the symbol ${symbol}. Please try again later`,
+            message: `Cannot find the symbol ${symbol}. Please try again later`,
+        });
+        status = 400;
+    } else if (response.data["Note"]) { 
+        errors.push({
+            message: `Server has reached max query limit for API. Please try again later`,
         });
         status = 400;
     } else {
         const dates = Object.keys(response.data["Time Series (Daily)"]);
-        Object.values(response.data["Time Series (Daily)"]).forEach((val: object, i: number) => {
+        Object.values(response.data["Time Series (Daily)"]).reverse().forEach((val: object, i: number) => {
             const standardedPriceObject: AdjustedStockPrice = standardize(val);
             standardedPriceObject["date"] = dates[i];
             adjustedStockPrices.push(standardedPriceObject);
         });
+        adjustedStockPrices.reverse();
     }
 
     return {
